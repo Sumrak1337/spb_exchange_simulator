@@ -27,3 +27,42 @@ def edge_children() -> dbc.Container:
         html.Hr(),
         dbc.Button("Сохранить", id={"type": "save", "name": "edge"})
     ], id={"type": "container", "name": "edge"})
+
+def parameters_panel() -> dbc.Container:
+    return dbc.Container(
+        html.Div([
+            html.H2("Параметры"),
+            html.Div([
+                dbc.Button("+ Добавить активность", style={"backgroundColor": "#e6b217", "opacity": 0.75, "width": "50%"}),
+                dbc.Button(id="delete-object", children="Удалить", style={"backgroundColor": "#b52626", "opacity": 0.75, "width": "50%"})
+            ], style={"display": "flex"}
+            )
+        ]))
+
+def make_stylesheet():
+    stylesheet = [
+        {
+            "selector": "node",
+            "style": {
+                "content": "data(label)",
+                "width": 70,
+                "height": 70,
+                "text-wrap": "wrap",
+                "font-size": "10px",
+                "text-valign": "center",
+                "text-halign": "center",
+                "color": "#0c2a45",
+                "font-weight": "bold",
+                "label-font": "sans-serif",
+            },
+        },
+        {
+            "selector": "edge",
+            "style": {
+                "target-arrow-shape": "triangle",
+                "arrow-scale": 0.75,
+                "curve-style": "bezier",
+            }
+        }
+    ]
+    return stylesheet
