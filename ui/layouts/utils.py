@@ -28,16 +28,15 @@ def edge_children() -> dbc.Container:
         dbc.Button("Сохранить", id={"type": "save", "name": "edge"})
     ], id={"type": "container", "name": "edge"})
 
-def parameters_panel() -> dbc.Container:
-    return dbc.Container(
-        html.Div([
+def inspector_parameters() -> html.Div:
+    return html.Div([
             html.H2("Параметры"),
             html.Div([
                 dbc.Button("+ Добавить активность", style={"backgroundColor": "#e6b217", "opacity": 0.75, "width": "50%"}),
                 dbc.Button(id="delete-object", children="Удалить", style={"backgroundColor": "#b52626", "opacity": 0.75, "width": "50%"})
             ], style={"display": "flex"}
             )
-        ]))
+        ])
 
 def make_stylesheet():
     stylesheet = [

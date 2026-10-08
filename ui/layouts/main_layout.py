@@ -1,7 +1,7 @@
 from dash import html, dcc
 import dash_cytoscape as cyto
 import dash_bootstrap_components as dbc
-from ui.layouts.utils import offcanvas, node_children, edge_children, parameters_panel, make_stylesheet
+from ui.layouts.utils import offcanvas, node_children, edge_children, inspector_parameters, make_stylesheet
 
 
 def build_layout() -> html.Div:
@@ -20,7 +20,7 @@ def build_layout() -> html.Div:
                 "height": "550px",
                 "backgroundColor": "#ffffff",
             }
-        ), html.Div(id="parameters", children=[parameters_panel()], style={"width": "30%"})], style={"display": "flex"}),
+        ), html.Div(id="inspector-body", children=inspector_parameters(), style={"width": "30%"})], style={"display": "flex"}),
         offcanvas(name="add-node", title="Добавить узел", children=node_children()),
         offcanvas(name="add-edge", title="Добавить дугу", children=edge_children()),
         html.Div(id="ns-check"),

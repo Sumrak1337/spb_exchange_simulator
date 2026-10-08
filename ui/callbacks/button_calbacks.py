@@ -70,3 +70,15 @@ def button_callback(app: Dash):
         elif selected["object_type"] == "edge":
             ns["edges"] = [edge for edge in ns["edges"] if edge != [selected["source"], selected["target"]]]
         return ns, None
+
+    @app.callback(Output("inspector-body", "children"),
+                  Input("selected-object", "data"), prevent_initial_callback=True)
+    def update_inspector(selected):
+        if selected:
+            if selected["object_type"] == "node":
+                return html.Div(html.H2("Активность узла"))
+            elif selected["object_type"] == "edge":
+                return html.Div(html.H2("Активность дуги"))
+
+        return html.Div()
+
