@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html
 from dash import dcc
 
-def offcanvas(*, name: str, title: str, children: dbc.Container):
+def offcanvas(*, name: str, title: str, children: dbc.Container, width=300):
     return dbc.Offcanvas(
         children,
         id={"type": "offcanvas", "name": name},
@@ -10,7 +10,7 @@ def offcanvas(*, name: str, title: str, children: dbc.Container):
         placement="start",
         scrollable=True,
         backdrop=True,
-        style={'width': 300},
+        style={'width': width},
     )
 
 def edge_children() -> dbc.Container:
@@ -21,15 +21,12 @@ def edge_children() -> dbc.Container:
         dbc.Button("Сохранить", id="save-edge")
     ], id={"type": "container", "name": "edge"})
 
-def inspector_parameters() -> html.Div:
-    return html.Div([
-            html.H2("Параметры"),
-            html.Div([
-                dbc.Button("+ Добавить активность", style={"backgroundColor": "#e6b217", "opacity": 0.75, "width": "50%"}),
-                dbc.Button(id="delete-object", children="Удалить", style={"backgroundColor": "#b52626", "opacity": 0.75, "width": "50%"})
-            ], style={"display": "flex"}
-            )
-        ])
+def activity_children() -> dbc.Container:
+    return dbc.Container([
+        dcc.Dropdown(id="activity-node-type", options=["supply", "demand"], placeholder="Вид активности"),
+        dbc.Input(id="activity-product", placeholder="Название материала"),
+        dbc.Button("Сохранить", id="save-activity", style={"marginTop": "20ppx"})
+    ])
 
 def make_stylesheet():
     stylesheet = [
@@ -67,10 +64,12 @@ def build_node_inspector(node, network_data):
         # add cards
 
         html.Div([
-            dbc.Button(id={"type": "add-activity", "node": node}, children="Добавить активность", style={"backgroundColor": "#e6b217", "opacity": 0.75, "width": "50%"}),
-            dbc.Button(id={"type": "delete-node", "node": node}, children="Удалить узел", style={"backgroundColor": "#b52626", "opacity": 0.75, "width": "50%"}),
+            dbc.Button(id={"type": "rename-node", "node": node}, children="Переименовать", style={"backgroundColor": "#4568d9", "opacity": 0.75, "width": "33%"}),
+            dbc.Button(id="add-activity", children="Добавить активность", style={"backgroundColor": "#e6b217", "opacity": 0.75, "width": "33%"}),
+            dbc.Button(id={"type": "delete-node", "node": node}, children="Удалить узел", style={"backgroundColor": "#b52626", "opacity": 0.75, "width": "33%"}),
         ]
-        )
+        ),
+        html.Div(id="edit-field")
     ]
     )
 

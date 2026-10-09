@@ -1,8 +1,7 @@
-from dash import Dash, Input, Output, State, MATCH, html, ALL
+from dash import Dash, Input, Output, State, MATCH, html, ALL, no_update
 import dash_bootstrap_components as dbc
 
-from ui.layouts.utils import inspector_parameters, build_node_inspector, \
-    build_edge_inspector
+from ui.layouts.utils import build_node_inspector, build_edge_inspector
 
 
 def button_callback(app: Dash):
@@ -78,23 +77,21 @@ def button_callback(app: Dash):
             current_node = btn_id["node"]
             ns["nodes"] = [node for node in ns["nodes"] if node != current_node]
             ns["edges"] = [edge for edge in ns["edges"] if current_node not in edge]
-            inspector = html.Div()
-        return ns, inspector
+            return ns, html.Div()
+        return no_update, no_update
 
     @app.callback(Output("network-structure", "data", allow_duplicate=True),
                   Output("inspector-body", "children", allow_duplicate=True),
                   Input({"type": "delete-edge", "source": MATCH, "target": MATCH}, "n_clicks"),
                   [State("network-structure", "data"),
-                   State({"type": "delete-edge", "source": MATCH, "target": MATCH}, "id"),
-                   State("inspector-body", "children"),
-                   ], prevent_initial_call=True)
-    def delete_edge(n_clicks, ns, btn_id, inspector):
+                   State({"type": "delete-edge", "source": MATCH, "target": MATCH}, "id"),], prevent_initial_call=True)
+    def delete_edge(n_clicks, ns, btn_id):
         if n_clicks:
             source = btn_id["source"]
             target = btn_id["target"]
             ns["edges"] = [edge for edge in ns["edges"] if edge != [source, target]]
-            inspector = html.Div()
-        return ns, inspector
+            return ns, html.Div()
+        return no_update, no_update
 
 
     @app.callback([Output("inspector-body", "children", allow_duplicate=True),
@@ -116,4 +113,52 @@ def button_callback(app: Dash):
         if edge_data:
             return build_edge_inspector(edge_data=edge_data, network_data=network_data), None
         return html.Div(), None
+
+    @app.callback(Output("edit-field", "children"),
+                  Input({"type": "rename-node", "node": MATCH}, "n_clicks"),
+                  [State({"type": "rename-node", "node": MATCH}, "id")],
+                  prevent_initial_call=True)
+    def rename_node(_n, btn):
+        return html.Div([
+            dbc.Input(id="rename-input", placeholder=btn["node"], style={"width": "50%"}),
+            dbc.Button(id="save-new-name", children="Сохранить", style={"width": "50%"})
+        ], style={"display": "flex", "marginTop": "20px"})
+
+    @app.callback(Output("network-structure", "data", allow_duplicate=True),
+                  Output("edit-field", "children", allow_duplicate=True),
+                  Output("inspector-body", "children", allow_duplicate=True),
+                  Input("save-new-name", "n_clicks"),
+                  [State("network-structure", "data"),
+                   State("rename-input", "value"),
+                   State({"type": "rename-node", "node": MATCH}, "id")],
+                  prevent_initial_call=True)
+    def save_new_name(_n, ns, new_name, old_name_id):
+        if new_name is not None:
+            old_name = old_name_id["node"]
+            if new_name in ns["nodes"]:
+                # TODO: write the logic
+                return ns, no_update, no_update
+            else:
+                ns["nodes"][ns["nodes"].index(old_name)] = new_name
+                for edge in ns["edges"]:
+                    if old_name in edge:
+                        edge[edge.index(old_name)] = new_name
+                return ns, html.Div(), html.Div()
+        return ns, no_update, no_update
+
+    @app.callback(Output({"type": "offcanvas", "name": "add-activity-name"}, "is_open", allow_duplicate=True),
+                  Input("add-activity", "n_clicks"), prevent_initial_call=True)
+    def open_activity_canvas(n_clicks):
+        if n_clicks:
+            return True
+        return False
+
+    # @app.callback(Output("network-data", "data"),
+    #               Input("save-activity", "n_clicks"),
+    #               [State("activity-node-type", "value"),
+    #                State("activity-product", "value")])
+    # def save_activity(n_clicks, node_type, product_name):
+    #     if n_clicks:
+    #         pass
+    #     return no_update
 
